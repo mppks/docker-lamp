@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+
+  web:
+    build: 
+      context: .
+      dockerfile: webDockerfile
+      args:
+        apache_document_root: ${APACHE_DOCUMENT_ROOT}
+    environment:
+      - APACHE_RUN_USER=#1000
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    ports:
+      - 8080:80
+    working_dir: ${APP_PATH_CONTAINER}
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+    volumes:
+      - ${DB_PATH_HOST}:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8181:8080
+
+  composer:
+    image: composer
+    working_dir: ${APP_PATH_CONTAINER}        
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}         
+    command: composer install 
+
+  node:
+    image: node:8
+    user: "node"
+    working_dir: ${APP_PATH_CONTAINER}
+    environment:
+      - NODE_ENV=dev
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    command: npm install
+    ports:
+      - "3000:3000"
+      - "3001:3001"
