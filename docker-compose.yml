@@ -33,13 +33,6 @@ services:
     ports:
       - 8181:8080
 
-  composer:
-    image: composer
-    working_dir: ${APP_PATH_CONTAINER}        
-    volumes:
-      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}         
-    command: composer install 
-
   node:
     image: node:8
     user: "node"
